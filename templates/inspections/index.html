@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vehicle Inspection Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Vehicle Inspection Tracker</h1>
+
+    <section class="card">
+        <h2>Schedule Inspection</h2>
+        <form id="inspection-form">
+            <label>
+                Vehicle Plate
+                <input type="text" name="vehicle_plate" required placeholder="ABC-1234">
+            </label>
+            <label>
+                Inspection Date
+                <input type="date" name="inspection_date" required>
+            </label>
+            <label>
+                Status
+                <select name="status" required>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="passed">Passed</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </label>
+            <label>
+                Notes
+                <textarea name="notes" rows="3" placeholder="Brakes need servicing"></textarea>
+            </label>
+            <button type="submit">Save Inspection</button>
+            <div id="form-message"></div>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>All Inspections</h2>
+        <table id="inspections-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Vehicle Plate</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<script>
+    async function loadInspections() {
+        const response = await fetch('/api/inspections');
+        const data = await response.json();
+        const tbody = document.querySelector('#inspections-table tbody');
+        tbody.innerHTML = '';
+        data.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.vehicle_plate}</td>
+                <td>${item.inspection_date}</td>
+                <td>${item.status}</td>
+                <td>${item.notes || ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.getElementById('inspection-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const payload = {
+            vehicle_plate: form.vehicle_plate.value,
+            inspection_date: form.inspection_date.value,
+            status: form.status.value,
+            notes: form.notes.value
+        };
+
+        const messageEl = document.getElementById('form-message');
+        messageEl.textContent = '';
+
+        const response = await fetch('/api/inspections', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            form.reset();
+            messageEl.textContent = 'Inspection saved successfully.';
+            messageEl.className = 'success';
+            await loadInspections();
+        } else {
+            const errorData = await response.json().catch(() => ({}));
+            messageEl.textContent = errorData.error || 'Failed to save inspection.';
+            messageEl.className = 'error';
+        }
+    });
+
+    loadInspections();
+</script>
+</body>
+</html>
+
