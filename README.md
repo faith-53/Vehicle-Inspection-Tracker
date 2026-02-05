@@ -5,7 +5,7 @@ This project is a simple Vehicle Inspection Tracker built with Django. It provid
 - REST API to create, list, retrieve, and update inspections.
 - Business rules enforcing valid statuses and future inspection dates.
 - Two automated tests covering successful creation and past-date rejection.
-- Optional web UI for scheduling inspections and viewing all records.
+- Web UI for scheduling inspections and viewing all records.
 
 ### Requirements
 
@@ -17,12 +17,6 @@ All Python dependencies are installed into a local virtual environment.
 ### Setup & Run Instructions
 
 1. Clone or open the project directory
-
-   Ensure your shell is at:
-
-   ```bash
-   cd "C:\\Users\\user\\Desktop\\Vehicle Inspection Tracker"
-   ```
 
 2. Create and activate virtual environment (if not already active)
 
